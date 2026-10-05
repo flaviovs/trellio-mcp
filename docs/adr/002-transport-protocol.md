@@ -1,6 +1,6 @@
 # ADR 002: Transport Protocol
 
-- **Status:** Accepted
+- **Status:** Superseded by [ADR 008](008-http-transports.md)
 - **Date:** 2026-04-08
 
 ## Context

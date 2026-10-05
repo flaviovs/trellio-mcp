@@ -24,8 +24,8 @@ the [BDD Guidelines v1.8.0](https://github.com/scaratec/burn-your-code).
   the browser, user clicks "Allow", token stored securely
 - **Structured error handling** — Trello API errors are
   translated into clear, actionable MCP error messages
-- **stdio transport** — runs as a local subprocess, no
-  network surface
+- **Multiple transports** — stdio by default, with optional streamable HTTP
+  and SSE listeners
 
 ## Tools
 
@@ -119,6 +119,21 @@ export TRELLO_TOKEN=your_token
 
 ## MCP Client Configuration
 
+### HTTP Transports
+
+The default transport is stdio. To run a network server instead, select a
+transport and optionally configure its bind address and port:
+
+```bash
+trellio-mcp --transport=streamable-http --host=127.0.0.1 --port=8096
+trellio-mcp --transport=sse --host=127.0.0.1 --port=8096
+```
+
+Streamable HTTP is available at `/mcp`; SSE is available at `/sse` with
+messages posted to `/messages/`. The HTTP transports do not provide
+application-level authentication, so keep the server bound to localhost
+unless access is protected by a trusted authentication and TLS layer.
+
 ### Claude Desktop
 
 Add to `~/Library/Application Support/Claude/claude_desktop_config.json`
@@ -180,7 +195,7 @@ Add to `~/.gemini/settings.json`:
 
 ```
 MCP Client (Claude / Gemini)
-    │ stdio (JSON-RPC)
+    │ stdio / streamable HTTP / SSE
     ▼
 trellio-mcp (FastMCP)
     │ async/await
@@ -196,12 +211,13 @@ Trello API
 | ADR | Decision |
 |-----|----------|
 | 001 | Python MCP SDK for language alignment with trellio |
-| 002 | stdio transport — no network attack surface |
+| 002 | Historical stdio-only transport decision (superseded by ADR 008) |
 | 003 | Stored credentials with env var fallback |
 | 004 | 1:1 tool mapping — one tool per trellio method |
 | 005 | trellio as PyPI dependency (>=1.4.0) |
 | 006 | Tools + Resources + Prompts as MCP capabilities |
 | 007 | `isError=true` + structured error content |
+| 008 | stdio by default; optional streamable HTTP and SSE transports |
 
 **Accepted weaknesses** are recorded separately in
 [`docs/limitations/`](docs/limitations/). A limitation there has
